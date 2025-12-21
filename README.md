@@ -104,7 +104,7 @@ I wanted to understand the basics of the function and behind the optimizations, 
 **Challenge:** Handle messages of any length and add the right padding. For me this was the hardest problem to understand.
 
 **What I did:**
-- I used a generator function because it's memory efficient
+- I used a generator function by using yield , since it's memory efficient
 - I tested with empty messages, tiny messages, and tricky boundary cases
 - I used clear variable names like `BLOCK_SIZE` and `msg_len_bits` instead of cryptic abbreviations
 
@@ -117,7 +117,7 @@ I wanted to understand the basics of the function and behind the optimizations, 
 - Implemented the 64-round compression function
 - Used the K constants from Problem 2 and functions from Problem 1
 - Verified against hashlib and NIST test vectors
-- Built a clean `sha256()` wrapper function
+- Built a clean `sha256()` (hash) wrapper function
 
 **Result:** My implementation produces identical hashes to Python's hashlib for all test cases.
 
@@ -139,7 +139,8 @@ At first I only implemented a dictionary attack , then expanded the common passw
 3. **Stage 3:** Brute force with lowercase + digits, length 4-6 (~45 min)
    - Found: "cheese" again
    - This took forever but showed me the limits
-   - Would take too long to keep increasing the length
+   - Would take too long to keep increasing the length , but
+     with enough time and uppercase , could potentially find them all.
 
 4. **Stage 4:** L33tspeak patterns (< 1 sec)
    - Found: "P@ssw0rd"
@@ -156,7 +157,7 @@ At first I only implemented a dictionary attack , then expanded the common passw
 **1. Why np.uint32 everywhere?**
 SHA-256 needs unsigned 32-bit integers. I used `np.uint32` to get automatic modulo 2^32 behavior and avoid weird bugs with negative numbers.
 
-**2. Why so many comments?**
+**2. Extra Commenting**
 Crypto is hard. I wanted future me (and anyone reviewing this) to understand my thinking, not just see working code.
 
 **3. Why test with "abc"?**
@@ -178,12 +179,6 @@ You can't really understand SHA-256 by just calling `hashlib.sha256()`. You have
 - Why SHA-256 alone is terrible for passwords
 - How tiny input changes create totally different hashes
 - Why we need slow algorithms like bcrypt and Argon2
-
-**Professional skills:**
-- Writing code that explains itself
-- Optimizing with understanding, not just speed
-- Using version control properly
-- Knowing when to optimize and when not to
 
 ## Security Tips
 
@@ -237,14 +232,11 @@ Based on what I learned cracking passwords:
 - I tested some edge cases (empty messages, boundary lengths)
 - I made sure the same input always gives the same output
 
-
 ### Personal Reflection
 
 This project was one of the most challenging but rewarding assignments I've completed at ATU. When I started, bitwise operations felt completely foreign to me , there was a lot I couldn't wrap my head around like why rotating bits was different from shifting them, or how XORing three numbers together could be useful for security.
 
-The moment everything started making sense was during Problem 3 (Padding). I spent hours staring at the FIPS specification, completely confused about why 55-byte and 56-byte messages needed different handling.
+Towards the end of the project I found that problem 5 was eye-opening in a different way. Cracking "password" in under a second made me realize how vulnerable most people's accounts actually are and why many websites require long passwords with a special character. By doing this brute force can go from taking seconds to hours , to days . Combined by key stretching it could take up to years! I was also surprised when I found out about Rainbow Tables which allowed me to find each of the target hashes in less than a second at the very end. If I were to extend this project further I'd like to include salting , which would make Rainbow Tables completely useless.
 
-Problem 5 was eye-opening in a different way. Cracking "password" in under a second made me realize how vulnerable most people's accounts actually are and why many websites require long passwords with a special character. By doing this brute force can go from taking seconds to hours , to days . Combined by key stretching it could take up to years! I was also surprised when I found out about Rainbow Tables which allowed me to find each of the target hashes in less than a second at the very end. If I were to extend this project further I'd like to include salting , which would make Rainbow Tables completely useless.
-
-Building SHA-256 from scratch rather than just calling `hashlib.sha256()` gave me a much deeper understanding of how cryptographic hashing actually works. I now understand *why* these algorithms are designed the way they are, not just *how* to use them. That understanding feels valuable beyond just this module.
+Building SHA-256 from scratch rather than just calling `hashlib.sha256()` gave me a much deeper understanding of how cryptographic hashing actually works. I now understand *why* these algorithms are designed the way they are, not just *how* to use them.
 
